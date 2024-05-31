@@ -1,0 +1,14 @@
+<div class="mt-5">
+    <h1>Create Note</h1>
+    <form ng-submit="createNote()">
+        <div class="form-group">
+            <label for="title">Title</label>
+            <input type="text" class="form-control" id="title" ng-model="note.title" required>
+        </div>
+        <div class="form-group">
+            <label for="description">Description</label>
+            <textarea class="form-control" id="description" ng-model="note.description" required></textarea>
+        </div>
+        <button type="submit" class="btn btn-primary">Save</button>
+    </form>
+</div>

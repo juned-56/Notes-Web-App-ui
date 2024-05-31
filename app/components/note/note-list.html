@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html ng-app="noteApp">
+<head>
+    <title>Notes App</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular.min.js"></script>
+    <script src="app/app.js"></script>
+    <script src="app/components/note/note.controller.js"></script>
+    <script src="app/components/note/note.service.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: #f4f4f9;
+        }
+        h1, h2 {
+            color: #333;
+        }
+        .btn {
+            display: inline-block;
+            padding: 10px 20px;
+            margin: 10px 0;
+            font-size: 16px;
+            color: #fff;
+            background-color: #007bff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            text-decoration: none;
+            text-align: center;
+        }
+        .btn:hover {
+            background-color: #0056b3;
+        }
+        .note-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            background-color: #fff;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        .note-table th, .note-table td {
+            padding: 15px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        .note-table th {
+            background-color: #007bff;
+            color: #fff;
+        }
+        .note-table tr:hover {
+            background-color: #f1f1f1;
+        }
+        .note-form {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            margin: 20px 0;
+        }
+        .note-form label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        .note-form input, .note-form textarea {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        .note-form button {
+            padding: 10px 20px;
+            font-size: 16px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .note-form button[type="submit"] {
+            background-color: #28a745;
+            color: #fff;
+        }
+        .note-form button[type="submit"]:hover {
+            background-color: #218838;
+        }
+        .note-form button[type="button"] {
+            background-color: #6c757d;
+            color: #fff;
+        }
+        .note-form button[type="button"]:hover {
+            background-color: #5a6268;
+        }
+        .actions button {
+            margin-right: 5px;
+        }
+        .modal {
+            display: block;
+            position: fixed;
+            z-index: 1;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0,0,0,0.4);
+            padding-top: 60px;
+        }
+        .modal-content {
+            background-color: #fff;
+            margin: 5% auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 80%;
+            border-radius: 5px;
+        }
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+        }
+        .close:hover,
+        .close:focus {
+            color: black;
+            text-decoration: none;
+            cursor: pointer;
+        }
+        .add-note-form {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            margin: 20px 0;
+        }
+        .add-note-form label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        .add-note-form input,
+        .add-note-form textarea {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        .add-note-form button {
+            padding: 10px 20px;
+            font-size: 16px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .add-note-form button[type="submit"] {
+            background-color: #28a745;
+            color: #fff;
+        }
+        .add-note-form button[type="submit"]:hover {
+            background-color: #218838;
+        }
+        .add-note-form button[type="button"] {
+            background-color: #6c757d;
+            color: #fff;
+        }
+        .add-note-form button[type="button"]:hover {
+            background-color: #5a6268;
+        }
+        .add-note-form .modal-content {
+            background-color: #f1f1f1;
+            width: 60%;
+        }
+        .add-note-form label {
+            color: #333;
+        }
+        .edit-note-form {
+            background-color: #f9f9f9;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            margin: 20px 0;
+        }
+        .edit-note-form label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        .edit-note-form input,
+        .edit-note-form textarea {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        .edit-note-form button {
+            padding: 10px 20px;
+            font-size: 16px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .edit-note-form button[type="submit"] {
+            background-color: #007bff;
+            color: #fff;
+        }
+        .edit-note-form button[type="submit"]:hover {
+            background-color: #0056b3;
+        }
+        .edit-note-form button[type="button"] {
+            background-color: #6c757d;
+            color: #fff;
+        }
+        .edit-note-form button[type="button"]:hover {
+            background-color: #5a6268;
+        }
+        .edit-note-form .modal-content {
+            background-color: #e9e9e9;
+            width: 60%;
+        }
+        .edit-note-form label {
+            color: #333;
+        }
+        .search-bar {
+            margin: 20px 0;
+        }
+        .search-input {
+            padding: 10px;
+            font-size: 16px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            width: calc(100% - 120px);
+            box-sizing: border-box;
+        }
+        .search-button {
+            padding: 10px 20px;
+            font-size: 16px;
+            color: #fff;
+            background-color: #007bff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            text-decoration: none;
+            text-align: center;
+        }
+        .search-button:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body ng-controller="NoteController">
+
+    <h1>Notes</h1>
+
+    <button class="btn" ng-click="showAddForm()">Add New Note</button>
+    <div class="search-bar">
+        <input type="text" ng-model="searchQuery" placeholder="Search by title" class="search-input" />
+        <button class="btn search-button" ng-click="searchNotes()">Search</button>
+    </div>
+    <table class="note-table">
+        <thead>
+            <tr>
+                <th>Title</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr ng-repeat="note in filteredNotes">
+                <td><a href="#" ng-click="selectNote(note)">{{ note.title }}</a></td>
+                <td class="actions">
+                    <button class="btn btn-edit" ng-click="showEditForm(note)">Edit</button>
+                    <button class="btn btn-delete" ng-click="deleteNote(note.id)">Delete</button>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+
+    <div class="modal" ng-show="showNoteDetailsPopup">
+        <div class="modal-content">
+            <span class="close" ng-click="closeNoteDetailsPopup()">&times;</span>
+            <h2>Note Details</h2>
+            <p><strong>Id:</strong> {{ selectedNote.id }}</p>
+            <p><strong>Username:</strong> {{ selectedNote.username }}</p>
+            <p><strong>Title:</strong> {{ selectedNote.title }}</p>
+            <p><strong>Description:</strong> {{ selectedNote.description }}</p>
+            <p><strong>Created At:</strong> {{ selectedNote.createdAt }}</p>
+        </div>
+    </div>
+    
+
+    <div class="modal" ng-show="isAdding">
+        <div class="modal-content">
+            <span class="close" ng-click="closeModal()">&times;</span>
+            <h2>Add New Note</h2>
+            <form ng-submit="saveNote()" class="add-note-form"> 
+                <label>Id: </label>
+                <input type="text" ng-model="noteForm.id" required />
+                <label>Username: </label>
+                <input type="text" ng-model="noteForm.username" required />
+                <label>Title: </label>
+                <input type="text" ng-model="noteForm.title" required />
+                <label>Description: </label>
+                <textarea ng-model="noteForm.description" required></textarea>
+                <button type="submit">Save</button>
+                <button type="button" ng-click="closeModal()">Cancel</button>
+            </form>
+        </div>
+    </div>
+    
+    <div class="modal" ng-show="isEditing">
+        <div class="modal-content">
+            <span class="close" ng-click="closeModal()">&times;</span>
+            <h2>Edit Note</h2>
+            <form ng-submit="updateNote()" class="edit-note-form">
+                <label>Username: </label>
+                <input type="text" ng-model="noteForm.username" required />
+                <label>Title: </label>
+                <input type="text" ng-model="noteForm.title" required />
+                <label>Description: </label>
+                <textarea ng-model="noteForm.description" required></textarea>
+                <button type="submit">Update</button>
+                <button type="button" ng-click="closeModal()">Cancel</button>
+            </form>
+        </div>
+    </div>
+
+    <div class="modal" ng-show="selectedNote && !isEditing && !isAdding">
+        <div class="modal-content">
+            <span class="close" ng-click="closeModal()">&times;</span>
+            <h2>Note Details</h2>
+            <p><strong>Id:</strong> {{ selectedNote.id }}</p>
+            <p><strong>Username:</strong> {{ selectedNote.username }}</p>
+            <p><strong>Title:</strong> {{ selectedNote.title }}</p>
+            <p><strong>Description:</strong> {{ selectedNote.description }}</p>
+            <p><strong>Created At:</strong> {{ selectedNote.createdAt }}</p>
+        </div>
+    </div>
+</body>
+</html>
